@@ -9,7 +9,7 @@ const configDatabase = {
     ssl: false
 };
 
-if (process.env.MODE === "prod") configDatabase.ssl = true;
+if (process.env.NODE_ENV === "production") configDatabase.ssl = true;
 
 const db = new Pool(configDatabase);
 
