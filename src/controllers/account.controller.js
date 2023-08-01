@@ -70,11 +70,9 @@ export async function signIn(req, res) {
 
 export async function getUserInfo(req, res) {
     try {
-        const userExists = await db.query(`SELECT * FROM sessions WHERE "token"=$1`, [token]);
+        const userInfo = await db.query(`SELECT * FROM users WHERE "email"=$1`, [res.locals.user.email]);
 
-        const userInfo = await db.query(`SELECT * FROM users WHERE "email"=$1`, [userExists.rows[0].email]);
-
-        const foundUserUrls = await db.query(`SELECT * FROM "short_urls" WHERE "usuario_id"=$1`, [userExists.rows[0].id]);
+        const foundUserUrls = await db.query(`SELECT * FROM "short_urls" WHERE "usuario_id"=$1`, [res.locals.user.id]);
         let allVisitsCount = 0;
 
         const userUrls = foundUserUrls.rows.map(url =>{
