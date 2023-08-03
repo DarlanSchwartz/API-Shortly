@@ -10,7 +10,7 @@ export async function getRanking(req, res) {
             LEFT JOIN short_urls ON users.id = short_urls.usuario_id
             GROUP BY users.id, users.name
             ORDER BY visitCount DESC
-            LIMIT 5;
+            LIMIT 10;
         `;
         const result = await db.query(query);
 
