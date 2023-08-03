@@ -28,10 +28,8 @@ export async function signIn(req, res) {
     try {
         const userExists = await db.query(`SELECT * FROM users WHERE "email"=$1`, [email]);
 
-        if (userExists.rowCount == 0) return res.sendStatus(404);
-
-        if(userExists.rows[0].password !== password) return res.sendStatus(401);
-
+        if (userExists.rowCount == 0 || userExists.rows[0].password !== password) return res.sendStatus(401);
+        
         const generatedToken = uuid();
         const response = {
             token: generatedToken
@@ -81,11 +79,11 @@ export async function getUserInfo(req, res) {
            
             url.shortUrl = url.shorturl;
             url.visitCount = url.visitcount;
+            allVisitsCount += Number(url.visitcount);
             delete url.shorturl;
             delete url.visitcount;
             delete url.usuario_id;
             delete url.createdat;
-            allVisitsCount += Number(url.visitcount);
             return url;
         });
 

@@ -47,6 +47,8 @@ export async function deleteUrl(req, res) {
     try {
         const shortendUrlInfo = await db.query(`SELECT * FROM short_urls WHERE id = $1`,[id]);
         if(shortendUrlInfo.rowCount == 0) return res.sendStatus(404);
+        const userId = (await db.query(`SELECT * FROM users WHERE email=$1`,[res.locals.user.email])).rows[0].id;
+        if(userId !== shortendUrlInfo.rows[0].usuario_id) return res.sendStatus(401);
         await db.query(`DELETE FROM short_urls WHERE id = $1`,[id]);
         return res.sendStatus(204);
     } catch (error) {
