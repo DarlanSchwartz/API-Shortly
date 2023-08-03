@@ -11,7 +11,17 @@ export async function getRanking(req, res) {
             LIMIT 10;
         `;
         const result = await db.query(query);
-        return res.status(200).send(result.rows);
+
+        const ranking = result.rows.map(url =>{
+           
+            url.linksCount = url.linkscount;
+            url.visitCount = url.visitcount;
+            delete url.linkscount;
+            delete url.visitcount;
+            return url;
+        });
+
+        return res.status(200).send(ranking);
     } catch (error) {
         console.log(error);
         return res.status(500).send('Internal server error');
