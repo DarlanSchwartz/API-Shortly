@@ -5,7 +5,7 @@
 -- Dumped from database version 15.3
 -- Dumped by pg_dump version 15.3
 
--- Started on 2023-08-03 11:52:19
+-- Started on 2023-08-03 12:40:38
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -30,7 +30,8 @@ SET default_table_access_method = heap;
 CREATE TABLE public.sessions (
     id integer NOT NULL,
     token character varying(255) NOT NULL,
-    email character varying(255)
+    email character varying(255),
+    "createdAt" timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -49,7 +50,7 @@ CREATE SEQUENCE public.sessions_new_id_seq
 
 
 --
--- TOC entry 3344 (class 0 OID 0)
+-- TOC entry 3346 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: sessions_new_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -68,7 +69,7 @@ CREATE TABLE public.short_urls (
     url text NOT NULL,
     usuario_id integer NOT NULL,
     visitcount integer DEFAULT 0,
-    createdat timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "createdAt" timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -87,7 +88,7 @@ CREATE SEQUENCE public.urls_encurtadas_id_seq
 
 
 --
--- TOC entry 3345 (class 0 OID 0)
+-- TOC entry 3347 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: urls_encurtadas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -104,7 +105,8 @@ CREATE TABLE public.users (
     id integer NOT NULL,
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL
+    password character varying(255) NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -123,7 +125,7 @@ CREATE SEQUENCE public.usuarios_id_seq
 
 
 --
--- TOC entry 3346 (class 0 OID 0)
+-- TOC entry 3348 (class 0 OID 0)
 -- Dependencies: 214
 -- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -132,7 +134,7 @@ ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.users.id;
 
 
 --
--- TOC entry 3187 (class 2604 OID 24659)
+-- TOC entry 3188 (class 2604 OID 24659)
 -- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -140,7 +142,7 @@ ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.ses
 
 
 --
--- TOC entry 3184 (class 2604 OID 24628)
+-- TOC entry 3185 (class 2604 OID 24628)
 -- Name: short_urls id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -156,7 +158,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.usuari
 
 
 --
--- TOC entry 3195 (class 2606 OID 24663)
+-- TOC entry 3197 (class 2606 OID 24663)
 -- Name: sessions sessions_new_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -165,7 +167,7 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- TOC entry 3191 (class 2606 OID 24634)
+-- TOC entry 3193 (class 2606 OID 24634)
 -- Name: short_urls urls_encurtadas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -174,7 +176,7 @@ ALTER TABLE ONLY public.short_urls
 
 
 --
--- TOC entry 3193 (class 2606 OID 24636)
+-- TOC entry 3195 (class 2606 OID 24636)
 -- Name: short_urls urls_encurtadas_shorturl_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -183,7 +185,7 @@ ALTER TABLE ONLY public.short_urls
 
 
 --
--- TOC entry 3189 (class 2606 OID 24612)
+-- TOC entry 3191 (class 2606 OID 24612)
 -- Name: users usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -192,7 +194,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3196 (class 2606 OID 24637)
+-- TOC entry 3198 (class 2606 OID 24637)
 -- Name: short_urls urls_encurtadas_usuario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -200,7 +202,7 @@ ALTER TABLE ONLY public.short_urls
     ADD CONSTRAINT urls_encurtadas_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
--- Completed on 2023-08-03 11:52:19
+-- Completed on 2023-08-03 12:40:38
 
 --
 -- PostgreSQL database dump complete

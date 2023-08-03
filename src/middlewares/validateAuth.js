@@ -9,7 +9,7 @@ export default async function validateAuth(req, res, next) {
   try {
     const userExists = await db.query(`SELECT * FROM sessions WHERE "token"=$1`, [token]);
 
-    if (userExists.rowCount == 0) return res.sendStatus(404);
+    if (userExists.rowCount == 0) return res.sendStatus(401);
 
     res.locals = {user: userExists.rows[0]};
 

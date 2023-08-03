@@ -19,6 +19,7 @@ export async function getUrl(req, res) {
     const {id} = req.params;
     try {
         const shortendUrlInfo = await db.query(`SELECT * FROM short_urls WHERE id = $1`,[id]);
+        if(shortendUrlInfo.rowCount == 0) return res.sendStatus(404);
         return res.status(200).send({id:shortendUrlInfo.rows[0].id,shortUrl:shortendUrlInfo.rows[0].shorturl, url: shortendUrlInfo.rows[0].url});
     } catch (error) {
         console.log(error.message);

@@ -24,11 +24,13 @@ export async function signUp(req, res) {
 }
 
 export async function signIn(req, res) {
-    const { email } = req.body;
+    const { email ,password } = req.body;
     try {
         const userExists = await db.query(`SELECT * FROM users WHERE "email"=$1`, [email]);
 
         if (userExists.rowCount == 0) return res.sendStatus(404);
+
+        if(userExists.rows[0].password !== password) return res.sendStatus(401);
 
         const generatedToken = uuid();
         const response = {
@@ -76,6 +78,11 @@ export async function getUserInfo(req, res) {
         let allVisitsCount = 0;
 
         const userUrls = foundUserUrls.rows.map(url =>{
+           
+            url.shortUrl = url.shorturl;
+            url.visitCount = url.visitcount;
+            delete url.shorturl;
+            delete url.visitcount;
             delete url.usuario_id;
             delete url.createdat;
             allVisitsCount += Number(url.visitcount);
