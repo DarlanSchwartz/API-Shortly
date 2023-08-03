@@ -72,7 +72,7 @@ export async function getUserInfo(req, res) {
     try {
         const userInfo = await db.query(`SELECT * FROM users WHERE "email"=$1`, [res.locals.user.email]);
 
-        const foundUserUrls = await db.query(`SELECT * FROM "short_urls" WHERE "usuario_id"=$1`, [res.locals.user.id]);
+        const foundUserUrls = await db.query(`SELECT * FROM short_urls WHERE usuario_id=$1`, [userInfo.rows[0].id]);
         let allVisitsCount = 0;
 
         const userUrls = foundUserUrls.rows.map(url =>{
