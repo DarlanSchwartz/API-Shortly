@@ -44,38 +44,6 @@ export async function signIn(req, res) {
     }
 }
 
-// export async function getUserInfo(req, res) {
-//     try {
-//         const userInfo = await db.query(`SELECT * FROM users WHERE "email"=$1`, [res.locals.user.email]);
-
-//         const foundUserUrls = await db.query(`SELECT * FROM short_urls WHERE owner_id=$1`, [userInfo.rows[0].id]);
-//         let allVisitsCount = 0;
-
-//         const userUrls = foundUserUrls.rows.map(url =>{
-//             allVisitsCount += Number(url.visitCount);
-//             return {
-//                 id:url.id,
-//                 url:url.url,
-//                 shortUrl:url.shorturl,
-//                 visitCount:url.visitCount
-//             };
-//         });
-
-//         const user =
-//         {
-//             id: userInfo.rows[0].id,
-//             name: userInfo.rows[0].name,
-//             visitCount: allVisitsCount,
-//             shortenedUrls: userUrls
-//         };
-
-//         return res.status(200).send(user);
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).send('Internal server error');
-//     }
-// }
-
 export async function getUserInfo2(req, res) {
     try {
         const query = `
