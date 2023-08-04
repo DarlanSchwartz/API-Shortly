@@ -6,7 +6,7 @@ export async function createUrl(req, res) {
     try {
         const userId = (await db.query(`SELECT * FROM users WHERE email=$1`,[res.locals.user.email])).rows[0].id;
         const shortUrl = nanoid(6);    
-        await db.query(`INSERT INTO short_urls (shorturl,url,usuario_id,visitcount) VALUES( $1,$2,$3,$4 )`,[shortUrl,url,userId,0]);
+        await db.query(`INSERT INTO short_urls (shorturl,url,owner_id,visitcount) VALUES( $1,$2,$3,$4 )`,[shortUrl,url,userId,0]);
         const id = (await db.query(`SELECT * FROM short_urls WHERE shorturl = $1`,[shortUrl])).rows[0].id;
         return res.status(201).send({id,shortUrl});
     } catch (error) {
@@ -48,7 +48,7 @@ export async function deleteUrl(req, res) {
         const shortendUrlInfo = await db.query(`SELECT * FROM short_urls WHERE id = $1`,[id]);
         if(shortendUrlInfo.rowCount == 0) return res.sendStatus(404);
         const userId = (await db.query(`SELECT * FROM users WHERE email=$1`,[res.locals.user.email])).rows[0].id;
-        if(userId !== shortendUrlInfo.rows[0].usuario_id) return res.sendStatus(401);
+        if(userId !== shortendUrlInfo.rows[0].owner_id) return res.sendStatus(401);
         await db.query(`DELETE FROM short_urls WHERE id = $1`,[id]);
         return res.sendStatus(204);
     } catch (error) {

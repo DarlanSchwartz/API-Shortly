@@ -48,19 +48,17 @@ export async function getUserInfo(req, res) {
     try {
         const userInfo = await db.query(`SELECT * FROM users WHERE "email"=$1`, [res.locals.user.email]);
 
-        const foundUserUrls = await db.query(`SELECT * FROM short_urls WHERE usuario_id=$1`, [userInfo.rows[0].id]);
+        const foundUserUrls = await db.query(`SELECT * FROM short_urls WHERE owner_id=$1`, [userInfo.rows[0].id]);
         let allVisitsCount = 0;
 
         const userUrls = foundUserUrls.rows.map(url =>{
-           
-            url.shortUrl = url.shorturl;
-            url.visitCount = url.visitcount;
-            allVisitsCount += Number(url.visitcount);
-            delete url.shorturl;
-            delete url.visitcount;
-            delete url.usuario_id;
-            delete url.createdat;
-            return url;
+            allVisitsCount += Number(url.visitCount);
+            return {
+                id:url.id,
+                url:url.url,
+                shortUrl:url.shorturl,
+                visitCount:url.visitCount
+            };
         });
 
         const user =
@@ -77,3 +75,4 @@ export async function getUserInfo(req, res) {
         return res.status(500).send('Internal server error');
     }
 }
+

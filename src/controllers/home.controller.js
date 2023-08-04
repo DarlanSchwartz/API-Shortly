@@ -5,9 +5,9 @@ export async function getRanking(req, res) {
         const query = `
             SELECT users.id, users.name,
                 COUNT(short_urls.id) AS linksCount,
-                COALESCE(SUM(short_urls.visitcount), 0) AS visitCount
+                COALESCE(SUM(short_urls."visitCount"), 0) AS visitCount
             FROM users
-            LEFT JOIN short_urls ON users.id = short_urls.usuario_id
+            LEFT JOIN short_urls ON users.id = short_urls.owner_id
             GROUP BY users.id, users.name
             ORDER BY visitCount DESC
             LIMIT 10;
@@ -18,8 +18,8 @@ export async function getRanking(req, res) {
 
             url.linksCount = url.linkscount;
             url.visitCount = url.visitcount;
-            delete url.linkscount;
             delete url.visitcount;
+            delete url.linkscount;
             return url;
         });
 
