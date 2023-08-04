@@ -5,7 +5,7 @@
 -- Dumped from database version 15.3
 -- Dumped by pg_dump version 15.3
 
--- Started on 2023-08-03 12:40:38
+-- Started on 2023-08-03 21:56:58
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -67,8 +67,8 @@ CREATE TABLE public.short_urls (
     id integer NOT NULL,
     shorturl character varying(50) NOT NULL,
     url text NOT NULL,
-    usuario_id integer NOT NULL,
-    visitcount integer DEFAULT 0,
+    owner_id integer NOT NULL,
+    "visitCount" integer DEFAULT 0,
     "createdAt" timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -199,10 +199,10 @@ ALTER TABLE ONLY public.users
 --
 
 ALTER TABLE ONLY public.short_urls
-    ADD CONSTRAINT urls_encurtadas_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.users(id) ON DELETE CASCADE;
+    ADD CONSTRAINT urls_encurtadas_usuario_id_fkey FOREIGN KEY (owner_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
--- Completed on 2023-08-03 12:40:38
+-- Completed on 2023-08-03 21:56:59
 
 --
 -- PostgreSQL database dump complete
