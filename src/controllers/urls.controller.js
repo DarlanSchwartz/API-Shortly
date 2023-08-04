@@ -6,7 +6,7 @@ export async function createUrl(req, res) {
     try {
         const userId = (await db.query(`SELECT * FROM users WHERE email=$1`,[res.locals.user.email])).rows[0].id;
         const shortUrl = nanoid(6);    
-        await db.query(`INSERT INTO short_urls (shorturl,url,owner_id,visitcount) VALUES( $1,$2,$3,$4 )`,[shortUrl,url,userId,0]);
+        await db.query(`INSERT INTO short_urls (shorturl,url,owner_id,"visitCount") VALUES( $1,$2,$3,$4 )`,[shortUrl,url,userId,0]);
         const id = (await db.query(`SELECT * FROM short_urls WHERE shorturl = $1`,[shortUrl])).rows[0].id;
         return res.status(201).send({id,shortUrl});
     } catch (error) {
@@ -34,7 +34,7 @@ export async function openUrl(req, res) {
     try {
         const shortendUrlInfo = await db.query(`SELECT * FROM short_urls WHERE shorturl = $1`,[path]);
         if(shortendUrlInfo.rowCount == 0) return res.sendStatus(404);
-        await db.query(`UPDATE short_urls SET visitcount = visitcount + 1 WHERE shorturl = $1`,[path]);
+        await db.query(`UPDATE short_urls SET "visitCount" = "visitCount" + 1 WHERE shorturl = $1`,[path]);
         return res.redirect(shortendUrlInfo.rows[0].url);
     } catch (error) {
         console.log(error.message);
