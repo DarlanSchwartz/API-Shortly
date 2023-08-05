@@ -1,3 +1,5 @@
+import db from "../database/database.connection.js";
+
 export async function getOverallRanking() {
     try {
         const query = `
@@ -11,9 +13,9 @@ export async function getOverallRanking() {
             LIMIT 10;
         `;
         const result = await db.query(query);
-
         return result.rows;
     } catch (error) {
+        console.log(error.message);
         return null;
     }
 }
