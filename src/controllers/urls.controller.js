@@ -1,14 +1,17 @@
 import db from '../database/database.connection.js';
 import { nanoid } from 'nanoid';
+import { createUrlFromHash, deleteUrlById, getShortenUrlInfoById, getShortenUrlInfoByPath, increaseVisitCountOfUrl } from '../repository/urls.repository.js';
+import { getInfoFromUser } from '../repository/account.repository.js';
 
 export async function createUrl(req, res) {
-    const {url} = req.body;
+    const { url } = req.body;
     try {
-        const userId = (await db.query(`SELECT * FROM users WHERE email=$1`,[res.locals.user.email])).rows[0].id;
-        const shortUrl = nanoid(6);    
-        await db.query(`INSERT INTO short_urls (shorturl,url,owner_id,"visitCount") VALUES( $1,$2,$3,$4 )`,[shortUrl,url,userId,0]);
-        const id = (await db.query(`SELECT * FROM short_urls WHERE shorturl = $1`,[shortUrl])).rows[0].id;
-        return res.status(201).send({id,shortUrl});
+        const user = await getInfoFromUser(res.locals.user.email);
+        const hash = nanoid(6);
+        await createUrlFromHash(url, hash, user.id);
+        const shortURL = await getShortenUrlInfoByPath(hash);
+        const id = shortURL.id;
+        return res.status(201).send({ id, shortUrl: hash });
     } catch (error) {
         console.log(error.message);
         return res.status(500).send('Internal server error');
@@ -16,11 +19,11 @@ export async function createUrl(req, res) {
 }
 
 export async function getUrl(req, res) {
-    const {id} = req.params;
+    const { id } = req.params;
     try {
-        const shortendUrlInfo = await db.query(`SELECT * FROM short_urls WHERE id = $1`,[id]);
-        if(shortendUrlInfo.rowCount == 0) return res.sendStatus(404);
-        return res.status(200).send({id:shortendUrlInfo.rows[0].id,shortUrl:shortendUrlInfo.rows[0].shorturl, url: shortendUrlInfo.rows[0].url});
+        const shortURL = await getShortenUrlInfoById(id);
+        if (!shortURL) return res.sendStatus(404);
+        return res.status(200).send({ id: shortURL.id, shortUrl: shortURL.shorturl, url: shortURL.url });
     } catch (error) {
         console.log(error.message);
         return res.status(500).send('Internal server error');
@@ -28,14 +31,11 @@ export async function getUrl(req, res) {
 }
 
 export async function openUrl(req, res) {
-
-    const path = req.params.shortUrl;
-
     try {
-        const shortendUrlInfo = await db.query(`SELECT * FROM short_urls WHERE shorturl = $1`,[path]);
-        if(shortendUrlInfo.rowCount == 0) return res.sendStatus(404);
-        await db.query(`UPDATE short_urls SET "visitCount" = "visitCount" + 1 WHERE shorturl = $1`,[path]);
-        return res.redirect(shortendUrlInfo.rows[0].url);
+        const shortURL = await getShortenUrlInfoByPath(req.params.shortUrl);
+        if (!shortURL) return res.sendStatus(404);
+        await increaseVisitCountOfUrl(req.params.shortUrl);
+        return res.redirect(shortURL.url);
     } catch (error) {
         console.log(error.message);
         return res.status(500).send('Internal server error');
@@ -43,13 +43,13 @@ export async function openUrl(req, res) {
 }
 
 export async function deleteUrl(req, res) {
-    const {id} = req.params;
+    const { id } = req.params;
     try {
-        const shortendUrlInfo = await db.query(`SELECT * FROM short_urls WHERE id = $1`,[id]);
-        if(shortendUrlInfo.rowCount == 0) return res.sendStatus(404);
-        const userId = (await db.query(`SELECT * FROM users WHERE email=$1`,[res.locals.user.email])).rows[0].id;
-        if(userId !== shortendUrlInfo.rows[0].owner_id) return res.sendStatus(401);
-        await db.query(`DELETE FROM short_urls WHERE id = $1`,[id]);
+        const shortURL = await getShortenUrlInfoById(id);
+        if (!shortURL) return res.sendStatus(404);
+        const user = await getInfoFromUser(res.locals.user.email);
+        if (user.id !== shortURL.owner_id) return res.sendStatus(401);
+        await deleteUrlById(id);
         return res.sendStatus(204);
     } catch (error) {
         console.log(error.message);
